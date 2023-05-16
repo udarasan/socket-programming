@@ -1,4 +1,4 @@
-import java.io.DataInputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -15,16 +15,33 @@ public class Main {
 
             //accept connection and move to new socket
             Socket socket=serverSocket.accept();
+            //client accepted
+            System.out.println("Client Accepted!");
+            DataOutputStream dataOutputStream=new DataOutputStream(socket.getOutputStream());
 
             //Java application uses an input stream to read data from a source; it may be a file,
             // an array, peripheral device or socket.
             DataInputStream dataInputStream=new DataInputStream(socket.getInputStream());
 
-            //UTF-8 character encoding values set to string
-            String message=dataInputStream.readUTF();
+            BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(System.in));
 
-            //print statement
-            System.out.println(message);
+            String message="";
+            String reply="";
+
+            while (!message.equals("finish")){
+
+                //UTF-8 character encoding values set to string
+                message=dataInputStream.readUTF();
+                //print Message
+                System.out.println(message);
+                reply= bufferedReader.readLine();
+                dataOutputStream.writeUTF(reply);
+                dataOutputStream.flush();
+
+            }
+            dataInputStream.close();
+            dataOutputStream.close();
+            bufferedReader.close();
 
             //close a socket
             socket.close();

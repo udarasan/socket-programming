@@ -1,4 +1,7 @@
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
 
 /**
@@ -14,14 +17,22 @@ public class Main {
 
             //output stream used for write data to server
             DataOutputStream dataOutputStream=new DataOutputStream(socket.getOutputStream());
+            DataInputStream dataInputStream=new DataInputStream(socket.getInputStream());
+            BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(System.in));
 
-            //UTF8 encoding
-            dataOutputStream.writeUTF("Hello Server");
-
-            //When you call flush(), the DataOutputStream will write any data that is currently
-            // in its buffer to the output stream, and then clear the buffer.
-            dataOutputStream.flush();
+            String message="";
+            String reply="";
+            while (!message.equals("finish")){
+                reply= bufferedReader.readLine();
+                dataOutputStream.writeUTF(reply);
+                message=dataInputStream.readUTF();
+                System.out.println(message);
+                dataOutputStream.flush();
+            }
+            dataInputStream.close();
             dataOutputStream.close();
+            bufferedReader.close();
+
             socket.close();
         }catch(Exception e){
             System.out.println(e.getMessage());
